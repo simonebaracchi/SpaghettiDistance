@@ -1,7 +1,10 @@
+from math import log
+
 class SpaghettiDistance():
     def __init__(self):
         self.dict = {}
-        self.total_sentences = 0
+        self.total_sets = 0
+        self.total_items = 0
 
     def get_similarity(self, a, b, normalized=True):
         """ 
@@ -9,20 +12,16 @@ class SpaghettiDistance():
         If "normalized" is True, the result is normalized between 0 (less similar) and 1 (more similar). 
         Otherwise, an unbounded float measuring the value of common items is returned.
         """
-        total_sentences = self.total_sentences if self.total_sentences > 0 else 1
-        score = 0
-        for word in (a & b):
-            word_count = self.dict[word] if word in self.dict else 0
-            score += 1 - (float(word_count) / total_sentences)
-
-        if not normalized:
-            total_score = 1
-        else:
-            total_score = 0
-            for word in (a | b):
-                word_count = self.dict[word] if word in self.dict else 0
-                total_score += 1 - (float(word_count) / total_sentences)
-        return score / total_score if total_score > 0 else 0
+        if self.total_sets == 0:
+            return len(a & b) / float(len(a | b))
+        dimension = len(a) * len(b)
+        score = 1
+        for item in (a & b):
+            if item not in self.dict or self.dict[item] == 0:
+                score = 0
+                break
+            score *= dimension * ((float(self.dict[item]) / self.total_sets) ** 2)
+        return -log(score)
 
     def get_distance(self, a, b):
         """ 
@@ -33,28 +32,33 @@ class SpaghettiDistance():
 
     def get_items_value(self, a):
         """ Returns the cumulative value of items in the set. """
-        if self.total_sentences <= 0:
+        if self.total_sets == 0:
             return len(a)
-        score = 0
-        for word in a:
-            word_count = self.dict[word] if word in self.dict else 0
-            score += 1 - (float(word_count) / self.total_sentences)
-        return score
+        dimension = len(a)
+        score = 1
+        for item in a:
+            if item not in self.dict:
+                score = 0
+                break
+            score *= dimension * ((float(self.dict[item]) / self.total_sets) ** 2)
+        return -log(score)
 
     def add(self, stems):
         """ Add a new set to the context. """
-        for word in stems:
-            if word in self.dict:
-                self.dict[word] += 1
+        for item in stems:
+            if item in self.dict:
+                self.dict[item] += 1
             else:
-                self.dict[word] = 1
-        self.total_sentences += 1
+                self.dict[item] = 1
+            self.total_items += 1
+        self.total_sets += 1
         
     def forget(self, stems):
         """ Remove a set from the context. """
-        for word in stems:
-            if word in self.dict:
-                self.dict[word] -= 1
-                if self.dict[word] == 0:
-                    del self.dict[word]
-        self.total_sentences -= 1
+        for item in stems:
+            if item in self.dict:
+                self.dict[item] -= 1
+                if self.dict[item] == 0:
+                    del self.dict[item]
+            self.total_items -= 1
+        self.total_sets -= 1
