@@ -12,7 +12,7 @@ class SpaghettiDistance():
         If "normalized" is True, the result is normalized between 0 (less similar) and 1 (more similar). 
         Otherwise, an unbounded float measuring the value of common items is returned.
         """
-        if self.total_sets == 0:
+        if self.total_items == 0:
             return len(a & b) / float(len(a | b))
         dimension = len(a) * len(b)
         score = 1
@@ -20,7 +20,7 @@ class SpaghettiDistance():
             if item not in self.dict or self.dict[item] == 0:
                 score = 0
                 break
-            score *= dimension * ((float(self.dict[item]) / self.total_sets) ** 2)
+            score *= dimension * ((float(self.dict[item]) / self.total_items) ** 2)
         return -log(score)
 
     def get_distance(self, a, b):
@@ -32,7 +32,7 @@ class SpaghettiDistance():
 
     def get_items_value(self, a):
         """ Returns the cumulative value of items in the set. """
-        if self.total_sets == 0:
+        if self.total_items == 0:
             return len(a)
         dimension = len(a)
         score = 1
@@ -40,7 +40,7 @@ class SpaghettiDistance():
             if item not in self.dict:
                 score = 0
                 break
-            score *= dimension * ((float(self.dict[item]) / self.total_sets) ** 2)
+            score *= dimension * ((float(self.dict[item]) / self.total_items) ** 2)
         return -log(score)
 
     def add(self, stems):
