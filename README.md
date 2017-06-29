@@ -1,11 +1,11 @@
-# SpaghettiDistance
-A context-aware set similarity (or distance) algorithm. Python2 and python3 compatible, no dependencies.
+# Spaghetti Distance Index
+A bag-of-words set similarity (or set distance) algorithm. Python2 and python3 compatible, no dependencies.
 
-Spaghetti Distance is an alternative I developed to Jaccard similarity index.
+Spaghetti Distance Index is an alternative I developed to Jaccard similarity index.
 
 It computes set distance or similarity attempting to keep context awareness, e.g. common set items (items that appear frequently across all sets) are less valuable when computing similarity.
 
-https://spaghettiwires.com
+See https://spaghettiwires.com/blog/2017/06/20/spaghetti-distance-index-set-similarity-algorithm/
 
 **Usage**
 
